@@ -1,0 +1,23 @@
+services:
+  app:
+    build:
+      context: ./app
+      target: development
+      args:
+        - "NODE_ENV=development"
+        - "GOLF_COURSE_API_KEY=${GOLF_COURSE_API_KEY}"
+    ports:
+      - "80:3000"
+    volumes:
+      - ./app/webapp:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=3000
+      - GOLF_COURSE_API_KEY=${GOLF_COURSE_API_KEY}
+    stdin_open: true
+    restart: unless-stopped
+    labels:
+      hostname: golfcourseapp
+    command: "yarn dev"
