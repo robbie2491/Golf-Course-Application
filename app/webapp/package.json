@@ -1,0 +1,20 @@
+{
+    "name": "golf-course-app",
+    "description": "Nuxt4 application which allows the user to search for any golf club",
+    "type": "module",
+    "scripts": {
+        "build": "nuxt build",
+        "dev": "nuxt dev",
+        "lint": "eslint ."
+    },
+    "dependencies": {
+        "@nuxt/eslint": "^1.15.2",
+        "nuxt": "^4.4.5"
+    },
+    "devDependencies": {
+        "@types/node": "^24.0.0",
+        "eslint": "^10.3.0",
+        "typescript": "6.0.3",
+        "vue-tsc": "3.2.8"
+    }
+}
