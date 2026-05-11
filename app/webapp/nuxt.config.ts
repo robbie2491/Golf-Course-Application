@@ -9,6 +9,9 @@ export default defineNuxtConfig({
       templateParams: {
         separator: '-',
       },
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+      ],
     },
   },
   compatibilityDate: '2024-11-01',
