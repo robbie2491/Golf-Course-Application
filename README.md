@@ -101,11 +101,43 @@ docker run -p 3000:3000 golf-course-app
 
 ## Available Scripts
 
-| Command        | Description                          |
-|----------------|--------------------------------------|
-| `yarn dev`     | Start the development server         |
-| `yarn build`   | Build for production                 |
-| `yarn lint`    | Run ESLint across the project        |
+| Command          | Description                          |
+|------------------|--------------------------------------|
+| `yarn dev`       | Start the development server         |
+| `yarn build`     | Build for production                 |
+| `yarn lint`      | Run ESLint across the project        |
+| `yarn test`      | Run the test suite once              |
+| `yarn test:watch`| Run tests in watch mode              |
+
+## Testing
+
+Tests live in `app/webapp/tests/` and mirror the `server/` directory structure.
+
+```
+tests/
+└── api/
+    └── courses/
+        ├── search.get.spec.ts   # Tests for GET /api/courses/search
+        └── id.get.spec.ts       # Tests for GET /api/courses/:id
+```
+
+The suite uses [Vitest](https://vitest.dev/) with a plain `node` environment — no Nuxt instance is required to run them.
+
+### Approach
+
+Each spec imports the route handler directly and stubs all H3/Nuxt server globals (`$fetch`, `useRuntimeConfig`, `getQuery`, `getRouterParam`, `createError`, `defineEventHandler`) using `vi.stubGlobal` before each test. This keeps tests fast, isolated, and free of external HTTP calls.
+
+`vi.resetModules()` is called in `beforeEach` so the handler module is re-evaluated fresh with the current stubs on every test.
+
+### Running the tests
+
+```bash
+# Single run (CI)
+docker compose run app yarn test
+
+# Watch mode (local development)
+docker compose run app yarn test:watch
+```
 
 ## API Routes
 
