@@ -26,9 +26,10 @@ export default defineNuxtConfig({
   },
   modules: [
     '@nuxt/eslint',
+    '@nuxt/test-utils/module',
   ],
   runtimeConfig: {
-    golfCourseApiKey: process.env.GOLF_COURSE_API_KEY,
+    golfCourseApiKey: process.env.GOLF_COURSE_API_KEY ?? '',
   },
   typescript: {
     strict: true,
