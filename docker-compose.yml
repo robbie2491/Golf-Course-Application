@@ -1,5 +1,7 @@
 services:
   app:
+    env_file:
+      - ./app/webapp/.env
     build:
       context: ./app
       target: development
