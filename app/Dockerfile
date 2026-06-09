@@ -1,8 +1,5 @@
 FROM node:24-alpine AS base
 
-ARG GOLF_COURSE_API_KEY
-ENV GOLF_COURSE_API_KEY=${GOLF_COURSE_API_KEY}
-
 WORKDIR /app
 
 # ── dependencies ──────────────────────────────────────────────────────────────
