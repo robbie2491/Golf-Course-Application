@@ -27,9 +27,10 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
     '@nuxt/test-utils/module',
+    '@nuxtjs/tailwindcss',
   ],
   runtimeConfig: {
-    golfCourseApiKey: process.env.GOLF_COURSE_API_KEY ?? '',
+    golfCourseApiKey: process.env.NUXT_GOLF_COURSE_API_KEY,
   },
   typescript: {
     strict: true,
