@@ -84,29 +84,30 @@ async function onSearch() {
 </script>
 
 <template>
-  <section class="course-listing">
-    <div class="course-listing__header">
-      <h2 class="course-listing__title">
+  <section class="max-w-[1100px] mx-auto px-4 py-8 font-sans">
+    <!-- Header -->
+    <div class="mb-6">
+      <h2 class="text-3xl font-bold text-[#1a3c2e] m-0">
         Golf Courses
       </h2>
     </div>
 
     <!-- Search form: accepts a course name or numeric ID -->
     <form
-      class="search-form"
+      class="mb-8 flex items-end gap-2 flex-wrap"
       @submit.prevent="onSearch"
     >
-      <div class="search-form__fields">
-        <div class="search-form__field">
+      <div class="flex gap-2 flex-1 flex-wrap">
+        <div class="flex flex-col gap-1 flex-1 min-w-40">
           <label
             for="course-search"
-            class="search-form__label"
+            class="text-xs font-medium text-gray-700"
           >Search by name or ID</label>
           <input
             id="course-search"
             v-model="searchQuery"
             type="search"
-            class="search-form__input"
+            class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 outline-offset-2 focus:outline-2 focus:outline-green-600 disabled:opacity-50"
             placeholder="e.g. St Andrews or 12795"
             :disabled="isLoading"
           >
@@ -114,7 +115,7 @@ async function onSearch() {
       </div>
       <button
         type="submit"
-        class="search-form__button"
+        class="px-5 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg border-none cursor-pointer transition-colors duration-200 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
         :disabled="isLoading || searchQuery.trim() === ''"
       >
         {{ isLoading ? 'Searching…' : 'Search' }}
@@ -124,7 +125,7 @@ async function onSearch() {
     <!-- Error state -->
     <p
       v-if="fetchError"
-      class="course-listing__error"
+      class="text-center text-red-700 mt-8"
       role="alert"
     >
       Something went wrong: {{ fetchError }}
@@ -133,7 +134,7 @@ async function onSearch() {
     <!-- Loading state -->
     <p
       v-else-if="isLoading"
-      class="course-listing__status"
+      class="text-center text-gray-500 mt-8"
       aria-live="polite"
     >
       Loading courses…
@@ -142,39 +143,41 @@ async function onSearch() {
     <!-- Empty state: shown only after a search has been submitted -->
     <p
       v-else-if="hasSearched && !isLoading && courses.length === 0"
-      class="course-listing__empty"
+      class="text-center text-gray-500 mt-8"
     >
       No courses found.
     </p>
 
-    <!-- Results grid -->
+    <!-- Results grid: 3 cols desktop → 2 tablet → 1 mobile -->
     <ul
       v-else-if="courses.length"
-      class="course-grid"
+      class="list-none p-0 m-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
     >
       <li
         v-for="course in courses"
         :key="course.id"
-        class="course-card"
-        :class="{ 'course-card--expanded': isSelected(course.id) }"
+        class="bg-white border rounded-2xl shadow-sm overflow-hidden transition-all duration-200"
+        :class="isSelected(course.id)
+          ? 'col-span-full border-green-600 shadow-[0_4px_16px_rgba(22,163,74,0.15)]'
+          : 'border-gray-200 hover:-translate-y-0.5 hover:shadow-md'"
       >
         <!-- Collapsed view: summary button -->
         <button
           v-if="!isSelected(course.id)"
-          class="course-card__summary"
+          class="block w-full bg-transparent border-none p-5 text-left cursor-pointer"
           :aria-expanded="false"
           @click="selectCourse(course.id)"
         >
-          <div class="course-card__top">
-            <h3 class="course-card__name">
+          <div class="flex items-start justify-between gap-2 mb-1">
+            <h3 class="text-base font-bold text-[#1a3c2e] m-0 leading-snug">
               {{ course.course_name }}
             </h3>
-            <span class="course-card__hint">View tees ▾</span>
+            <span class="text-[0.7rem] text-gray-400 whitespace-nowrap pt-0.5">View tees ▾</span>
           </div>
-          <p class="course-card__club">
+          <p class="text-sm font-medium text-green-600 m-0 mb-0.5">
             {{ course.club_name }}
           </p>
-          <p class="course-card__location">
+          <p class="text-xs text-gray-500 m-0">
             <span aria-hidden="true">📍</span>
             {{ [course.location.city, course.location.state, course.location.country].filter(Boolean).join(', ') }}
           </p>
@@ -183,26 +186,27 @@ async function onSearch() {
         <!-- Expanded view: full tee data -->
         <div
           v-else
-          class="course-card__body"
+          class="p-5"
         >
-          <div class="course-card__expanded-header">
+          <!-- Expanded header -->
+          <div class="flex items-start justify-between gap-4 mb-4">
             <div>
-              <div class="course-card__top">
-                <h3 class="course-card__name">
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <h3 class="text-base font-bold text-[#1a3c2e] m-0 leading-snug">
                   {{ course.course_name }}
                 </h3>
               </div>
-              <p class="course-card__club">
+              <p class="text-sm font-medium text-green-600 m-0 mb-0.5">
                 {{ course.club_name }}
               </p>
-              <p class="course-card__location">
+              <p class="text-xs text-gray-500 m-0">
                 <span aria-hidden="true">📍</span>
                 {{ [course.location.city, course.location.state, course.location.country].filter(Boolean).join(', ') }}
               </p>
             </div>
-            <!-- Close button collapses the card back to summary view -->
+            <!-- Close button collapses the card -->
             <button
-              class="course-card__close"
+              class="bg-transparent border border-gray-200 rounded-md px-2 py-1 text-xs text-gray-500 cursor-pointer flex-shrink-0 transition-colors duration-150 hover:bg-gray-100"
               :aria-label="`Close ${course.course_name}`"
               @click="selectCourse(course.id)"
             >
@@ -210,45 +214,41 @@ async function onSearch() {
             </button>
           </div>
 
-          <!-- Men's and women's tees displayed side by side -->
-          <div class="tees-grid">
+          <!-- Men's and women's tees displayed side by side, stacks on mobile -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
             <!-- Men's tees -->
             <div
               v-if="course.tees.male?.length"
-              class="tees-section"
+              class="border-t border-gray-100 pt-3"
             >
-              <h4 class="tees-section__title tees-section__title--male">
+              <h4 class="text-[0.7rem] font-bold uppercase tracking-wider text-blue-700 m-0 mb-2">
                 ♂ Men's Tees
               </h4>
               <div
                 v-for="tee in course.tees.male"
                 :key="tee.tee_name"
-                class="tee-row"
+                class="flex flex-col gap-1.5 py-2 border-t border-gray-100 first:border-t-0"
               >
-                <span class="tee-row__name">{{ tee.tee_name }}</span>
+                <span class="text-[0.72rem] font-bold uppercase tracking-wider text-gray-700">
+                  {{ tee.tee_name }}
+                </span>
                 <ul
-                  class="stats"
+                  class="list-none p-0 m-0 grid grid-cols-5 gap-1.5"
                   :aria-label="`Men's ${tee.tee_name} tee details`"
                 >
-                  <li class="stat">
-                    <span class="stat__label">Holes</span>
-                    <span class="stat__value">{{ tee.number_of_holes }}</span>
-                  </li>
-                  <li class="stat">
-                    <span class="stat__label">Par</span>
-                    <span class="stat__value">{{ tee.par_total }}</span>
-                  </li>
-                  <li class="stat">
-                    <span class="stat__label">Rating</span>
-                    <span class="stat__value">{{ tee.course_rating }}</span>
-                  </li>
-                  <li class="stat">
-                    <span class="stat__label">Slope</span>
-                    <span class="stat__value">{{ tee.slope_rating }}</span>
-                  </li>
-                  <li class="stat">
-                    <span class="stat__label">Yards</span>
-                    <span class="stat__value">{{ tee.total_yards.toLocaleString() }}</span>
+                  <li
+                    v-for="stat in [
+                      { label: 'Holes', value: tee.number_of_holes },
+                      { label: 'Par', value: tee.par_total },
+                      { label: 'Rating', value: tee.course_rating },
+                      { label: 'Slope', value: tee.slope_rating },
+                      { label: 'Yards', value: tee.total_yards.toLocaleString() },
+                    ]"
+                    :key="stat.label"
+                    class="flex flex-col items-center gap-0.5 bg-gray-50 rounded-md py-1.5 px-0.5"
+                  >
+                    <span class="text-[0.6rem] uppercase tracking-wider text-gray-400 font-semibold">{{ stat.label }}</span>
+                    <span class="text-[0.82rem] font-bold text-gray-900">{{ stat.value }}</span>
                   </li>
                 </ul>
               </div>
@@ -257,40 +257,36 @@ async function onSearch() {
             <!-- Women's tees -->
             <div
               v-if="course.tees.female?.length"
-              class="tees-section tees-section--female"
+              class="border-t border-pink-100 pt-3"
             >
-              <h4 class="tees-section__title tees-section__title--female">
+              <h4 class="text-[0.7rem] font-bold uppercase tracking-wider text-pink-800 m-0 mb-2">
                 ♀ Women's Tees
               </h4>
               <div
                 v-for="tee in course.tees.female"
                 :key="tee.tee_name"
-                class="tee-row"
+                class="flex flex-col gap-1.5 py-2 border-t border-gray-100 first:border-t-0"
               >
-                <span class="tee-row__name">{{ tee.tee_name }}</span>
+                <span class="text-[0.72rem] font-bold uppercase tracking-wider text-gray-700">
+                  {{ tee.tee_name }}
+                </span>
                 <ul
-                  class="stats"
+                  class="list-none p-0 m-0 grid grid-cols-5 gap-1.5"
                   :aria-label="`Women's ${tee.tee_name} tee details`"
                 >
-                  <li class="stat">
-                    <span class="stat__label">Holes</span>
-                    <span class="stat__value">{{ tee.number_of_holes }}</span>
-                  </li>
-                  <li class="stat">
-                    <span class="stat__label">Par</span>
-                    <span class="stat__value">{{ tee.par_total }}</span>
-                  </li>
-                  <li class="stat">
-                    <span class="stat__label">Rating</span>
-                    <span class="stat__value">{{ tee.course_rating }}</span>
-                  </li>
-                  <li class="stat">
-                    <span class="stat__label">Slope</span>
-                    <span class="stat__value">{{ tee.slope_rating }}</span>
-                  </li>
-                  <li class="stat">
-                    <span class="stat__label">Yards</span>
-                    <span class="stat__value">{{ tee.total_yards.toLocaleString() }}</span>
+                  <li
+                    v-for="stat in [
+                      { label: 'Holes', value: tee.number_of_holes },
+                      { label: 'Par', value: tee.par_total },
+                      { label: 'Rating', value: tee.course_rating },
+                      { label: 'Slope', value: tee.slope_rating },
+                      { label: 'Yards', value: tee.total_yards.toLocaleString() },
+                    ]"
+                    :key="stat.label"
+                    class="flex flex-col items-center gap-0.5 bg-gray-50 rounded-md py-1.5 px-0.5"
+                  >
+                    <span class="text-[0.6rem] uppercase tracking-wider text-gray-400 font-semibold">{{ stat.label }}</span>
+                    <span class="text-[0.82rem] font-bold text-gray-900">{{ stat.value }}</span>
                   </li>
                 </ul>
               </div>
@@ -301,316 +297,3 @@ async function onSearch() {
     </ul>
   </section>
 </template>
-
-<style scoped>
-.course-listing {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  font-family: system-ui, sans-serif;
-}
-
-.course-listing__header {
-  margin-bottom: 1.5rem;
-}
-
-.course-listing__title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #1a3c2e;
-  margin: 0;
-}
-
-.course-listing__status,
-.course-listing__empty {
-  text-align: center;
-  color: #6b7280;
-  margin-top: 2rem;
-}
-
-.course-listing__error {
-  text-align: center;
-  color: #b91c1c;
-  margin-top: 2rem;
-}
-
-/* Search */
-.search-form {
-  margin-bottom: 2rem;
-  display: flex;
-  align-items: flex-end;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.search-form__fields {
-  display: flex;
-  gap: 0.5rem;
-  flex: 1;
-  flex-wrap: wrap;
-}
-
-.search-form__field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  flex: 1;
-  min-width: 160px;
-}
-
-.search-form__label {
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: #374151;
-}
-
-.search-form__input {
-  flex: 1;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  font-size: 0.9rem;
-  color: #111827;
-  outline-offset: 2px;
-}
-
-.search-form__input:focus {
-  outline: 2px solid #16a34a;
-}
-
-.search-form__button {
-  padding: 0.5rem 1.25rem;
-  background-color: #16a34a;
-  color: #fff;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.search-form__button:hover:not(:disabled) {
-  background-color: #15803d;
-}
-
-.search-form__button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Grid — 3 columns desktop, 2 tablet, 1 mobile */
-.course-grid {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
-
-@media (max-width: 900px) {
-  .course-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 580px) {
-  .course-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Card */
-.course-card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  overflow: hidden;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-/* Lift effect on hover — only for collapsed cards */
-.course-card:not(.course-card--expanded):hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-/* Expanded card spans the full grid row */
-.course-card--expanded {
-  grid-column: 1 / -1;
-  border-color: #16a34a;
-  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.15);
-}
-
-/* Collapsed summary button fills the card */
-.course-card__summary {
-  display: block;
-  width: 100%;
-  background: none;
-  border: none;
-  padding: 1.25rem;
-  text-align: left;
-  cursor: pointer;
-}
-
-.course-card__top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
-}
-
-.course-card__name {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #1a3c2e;
-  margin: 0;
-  line-height: 1.3;
-}
-
-.course-card__hint {
-  font-size: 0.7rem;
-  color: #9ca3af;
-  white-space: nowrap;
-  padding-top: 0.2rem;
-}
-
-.course-card__club {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #16a34a;
-  margin: 0 0 0.2rem;
-}
-
-.course-card__location {
-  font-size: 0.8rem;
-  color: #6b7280;
-  margin: 0;
-}
-
-/* Expanded body */
-.course-card__body {
-  padding: 1.25rem;
-}
-
-.course-card__expanded-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.course-card__close {
-  background: none;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.4rem;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.8rem;
-  color: #6b7280;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background-color 0.15s ease;
-}
-
-.course-card__close:hover {
-  background-color: #f3f4f6;
-}
-
-/* Tees grid — men and women side by side, stacks on mobile */
-.tees-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 2rem;
-}
-
-@media (max-width: 640px) {
-  .tees-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Tees section */
-.tees-section {
-  border-top: 1px solid #f3f4f6;
-  padding-top: 0.75rem;
-}
-
-.tees-section--female {
-  border-top-color: #fce7f3;
-}
-
-.tees-section__title {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin: 0 0 0.5rem;
-}
-
-.tees-section__title--male {
-  color: #1d4ed8;
-}
-
-.tees-section__title--female {
-  color: #9d174d;
-}
-
-/* Tee rows — one row per tee set */
-.tee-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  padding: 0.5rem 0;
-  border-top: 1px solid #f3f4f6;
-}
-
-.tee-row:first-of-type {
-  border-top: none;
-}
-
-.tee-row__name {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #374151;
-}
-
-/* Stats pill grid */
-.stats {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0.4rem;
-}
-
-.stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.15rem;
-  background-color: #f9fafb;
-  border-radius: 0.4rem;
-  padding: 0.3rem 0.2rem;
-}
-
-.stat__label {
-  font-size: 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #9ca3af;
-  font-weight: 600;
-}
-
-.stat__value {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #111827;
-}
-</style>

@@ -38,7 +38,7 @@ function stubServerGlobals() {
 function makeEvent(id?: string) {
   return {
     context: {
-      params: id !== undefined ? { id } : {},
+      params: id ? { id } : {},
     },
   } as Parameters<typeof import('h3')['getRouterParam']>[0]
 }
