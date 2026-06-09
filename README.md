@@ -7,6 +7,7 @@ A Nuxt 4 web application that allows users to search for golf clubs and courses 
 - **[Nuxt 4](https://nuxt.com/)** — Vue-based full-stack framework
 - **[Vue 3](https://vuejs.org/)** — UI framework
 - **[TypeScript](https://www.typescriptlang.org/)** — Type safety
+- **[Tailwind CSS v3](https://tailwindcss.com/)** — Utility-first CSS framework via `@nuxtjs/tailwindcss`
 - **[ESLint](https://eslint.org/)** — Linting via `@nuxt/eslint`
 - **[Docker](https://www.docker.com/)** — Containerised development and production builds
 - **[Yarn](https://yarnpkg.com/)** — Package manager
@@ -61,7 +62,7 @@ cp app/webapp/.env.dist app/webapp/.env
 Then edit `.env`:
 
 ```env
-GOLF_COURSE_API_KEY=your_api_key_here
+NUXT_GOLF_COURSE_API_KEY=your_api_key_here
 ```
 
 ### Local Development (without Docker)
@@ -139,6 +140,67 @@ docker compose run app yarn test
 docker compose run app yarn test:watch
 ```
 
+## Tailwind CSS
+
+Styling is handled by [Tailwind CSS v3](https://tailwindcss.com/) via the [`@nuxtjs/tailwindcss`](https://tailwindcss.nuxtjs.org/) module, which handles PostCSS config, content scanning, and hot-reloading automatically.
+
+### How it's wired up
+
+The module is registered in `nuxt.config.ts`:
+
+```ts
+modules: [
+  '@nuxtjs/tailwindcss',
+]
+```
+
+No additional PostCSS or CSS imports are required — the module injects the Tailwind directives automatically.
+
+### Customising the theme
+
+To extend or override the default theme, create a `tailwind.config.ts` at `app/webapp/tailwind.config.ts`:
+
+```ts
+import type { Config } from 'tailwindcss'
+
+export default {
+  content: [],  // the module sets content paths automatically
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          green: '#2d6a4f',
+          light: '#74c69d',
+        },
+      },
+    },
+  },
+} satisfies Config
+```
+
+The module merges your config on top of the Tailwind defaults, so you only need to declare what you're changing.
+
+### Using utility classes in components
+
+Apply Tailwind classes directly in Vue templates:
+
+```vue
+<template>
+  <div class="flex flex-col gap-4 p-6 bg-white rounded-lg shadow">
+    <h2 class="text-xl font-semibold text-gray-800">Course Name</h2>
+    <p class="text-sm text-gray-500">Some detail</p>
+  </div>
+</template>
+```
+
+### Useful references
+
+- [Tailwind CSS docs](https://tailwindcss.com/docs)
+- [`@nuxtjs/tailwindcss` docs](https://tailwindcss.nuxtjs.org/)
+- [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) — VS Code extension for class autocomplete
+
+---
+
 ## API Routes
 
 | Route                       | Description                                              |
@@ -152,7 +214,7 @@ Both routes proxy to [golfcourseapi.com](https://golfcourseapi.com/) — the API
 
 | Variable              | Required | Description                                      |
 |-----------------------|----------|--------------------------------------------------|
-| `GOLF_COURSE_API_KEY` | Yes      | API key for [golfcourseapi.com](https://golfcourseapi.com/) |
+| `NUXT_GOLF_COURSE_API_KEY` | Yes      | API key for [golfcourseapi.com](https://golfcourseapi.com/) |
 | `NODE_ENV`            | No       | Node environment (default: `development`)        |
 | `NUXT_HOST`           | No       | Host the Nuxt server binds to (default: `0.0.0.0`) |
 | `NUXT_PORT`           | No       | Port the Nuxt server listens on (default: `3000`) |
